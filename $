@@ -1,0 +1,21 @@
+import { Client, Environment } from 'square';
+
+const client = new Client({
+accessToken: process.env.SQUARE_ACCESS_TOKEN,
+environment: Environment.Production,
+});
+
+export default async function handler(req, res) {
+const { sourceId, amount } = req.body;
+
+const response = await client.paymentsApi.createPayment({
+sourceId,
+idempotencyKey: crypto.randomUUID(),
+amountMoney: {
+amount: amount, // in cents (e.g., $10 → 1000)
+currency: 'USD',
+},
+});
+
+res.status(200).json(response.result);
+}
